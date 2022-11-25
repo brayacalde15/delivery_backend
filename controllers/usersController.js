@@ -51,7 +51,7 @@ module.exports = {
           email: myUser.email,
           image: myUser.image,
           session_token: `JWT ${token}`,
-          roles:JSON.parse(myUser.roles)
+          roles: JSON.parse(myUser.roles),
         };
         return res.status(201).json({
           success: true,
@@ -118,15 +118,18 @@ module.exports = {
 
       user.id = `${data}`;
 
-      Rol.create(user.id,3,(err,(data) => {
+      Rol.create(
+        user.id,
+        3,
+        (err,
+        (data) => {
           if (err) {
             return res.status(501).json({
               success: false,
               message: "Hubo un error con el registro del rol de  Usuario",
               error: err,
             });
-          } 
-          else {
+          } else {
             return res.status(201).json({
               success: true,
               message: "El registro se realizo correctamente",
@@ -135,6 +138,94 @@ module.exports = {
           }
         })
       );
+    });
+  },
+
+  async updateWithImage(req, res) {
+    const user = JSON.parse(req.body.user); //CAPTURO LOS DATOS QUE ME ENVIA EL CLIENTE.
+
+    console.log("Usuario impreso:",user);
+
+    const files = req.files;
+
+    if (files.length > 0) {
+      const path = `image_${Date.now()}`;
+      const url = await storage(files[0], path);
+
+      if (url != undefined && url != null) {
+        user.image = url;
+      }
+    }
+
+    User.update(user, (err, data) => {
+      if (err) {
+        return res.status(501).json({
+          success: false,
+          message: "Hubo un error con la actualizacion del Usuario",
+          error: err,
+        });
+      } 
+
+      User.findById(data, (err, myData) => {
+        if (err) {
+          return res.status(501).json({
+            success: false,
+            message: "Hubo un error con la actualizacion del Usuario",
+            error: err,
+          });
+        }
+        
+
+        myData.session_token = user.session_token;
+        myData.roles = JSON.parse(myData.roles);
+
+        return res.status(201).json({
+          success: true,
+          message: "El usuario se actualizo correctamente:",
+          data: myData,
+        }
+    
+
+        
+        );
+        
+      });
+    });
+  },
+
+  async updateWithOutImage(req, res) {
+    const user = req.body;
+
+    
+
+
+    User.updateWithOutImage(user, (err, data) => {
+      if (err) {
+        return res.status(501).json({
+          success: false,
+          message: "Hubo un error con la actualizacion del Usuario",
+          error: err,
+        });
+      }
+
+      User.findById(data, (err, myData) => {
+        if (err) {
+          return res.status(501).json({
+            success: false,
+            message: "Hubo un error con la actualizacion del Usuario",
+            error: err,
+          });
+        }
+
+        myData.session_token = user.session_token;
+        myData.roles = JSON.parse(myData.roles);
+
+        return res.status(201).json({
+          success: true,
+          message: "El usuario se actualizo correctamente:",
+          data: myData,
+        });
+      });
     });
   },
 };

@@ -8,10 +8,15 @@ const passport = require("passport");
 const multer = require("multer");
 
 /**
- IMPORTAR RUTAS
+IMPORTAR RUTAS
  * 
  */
 const usersRoutes = require("./routes/userRoutes");
+const categoriesRoutes = require("./routes/categoryRoutes");
+
+
+
+
 const { secretOrKey } = require("./config/keys");
 var session = require("express-session");
 
@@ -55,6 +60,7 @@ const upload = multer({
  */
 
 usersRoutes(app, upload);
+categoriesRoutes(app);
 
 server.listen(3000, "" || "localhost", function () {
   console.log("Aplicacion de NodeJS " + port + " Iniciada");

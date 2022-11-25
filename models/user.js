@@ -1,11 +1,11 @@
 const db = require("../config/config");
 const bcrypt = require("bcryptjs");
+const { session } = require("passport/lib");
 const User = {};
 
 User.findById = (id, result) => {
-  const sql =
-  `SELECT 
-  U.id,
+  const sql = `SELECT 
+  CONVERT(U.id, CHAR) AS id,
   U.email,
   U.name,
   U.lastname,
@@ -31,24 +31,23 @@ User.findById = (id, result) => {
     roles AS R 
     ON UHR.id_rol= R.id
     WHERE
-    id = ?
+    U.id = ?
     GROUP BY U.id`;
-
+console.log("Este es el Id : ",id);
   db.query(sql, [id], (err, user) => {
     if (err) {
       console.log("Error", err);
       result(err, null);
     } else {
-      console.log("Usuario Obtenido", user[0]);
+      console.log("Usuario Obtenido", user);
       result(null, user[0]);
     }
+    
   });
 };
 
-
 User.findByEmail = (email, result) => {
-  const sql =
-    `SELECT 
+  const sql = `SELECT 
     U.id,
     U.email,
     U.name,
@@ -120,4 +119,79 @@ User.create = async (user, result) => {
     }
   );
 };
+
+User.update = (user, result) => {
+  const sql = 
+  `
+  UPDATE
+        users
+  SET
+        name = ?,
+        lastname = ?,
+        phone = ? ,
+        image = ?,
+        update_at =  ?
+  WHERE  
+        id = ?  
+  `;
+
+  db.query(
+    sql,
+    [
+      user.name,
+      user.lastname,
+      user.phone,
+      user.image,         
+      new Date(),
+      user.id
+      
+    ],
+    (err, res) => {
+      if (err) {
+        console.log("Error", err);
+        result(err, null);
+      } else {
+        console.log("Usuario Actualizado correctamente",user.id);
+        result(null, user.id);
+      }
+    }
+  );
+};
+
+User.updateWithOutImage = (user, result) => {
+  const sql = 
+  `
+  UPDATE
+        users
+  SET
+        name=?,
+        lastname=?,
+        phone=?,
+        update_at = ?        
+        
+  WHERE  
+        id=? 
+  `;
+
+  db.query(
+    sql,
+    [
+      user.name,
+      user.lastname,
+      user.phone,
+      new Date(),
+      user.id
+    ],
+    (err, res) => {
+      if (err) {
+        console.log("Error", err);
+        result(err, null);
+      } else {
+        console.log("Usuario Actualizado correctamente",user.id);
+        result(null, user.id);
+      }
+    }
+  );
+};
+
 module.exports = User;
