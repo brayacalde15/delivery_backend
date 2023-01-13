@@ -13,6 +13,8 @@ IMPORTAR RUTAS
  */
 const usersRoutes = require("./routes/userRoutes");
 const categoriesRoutes = require("./routes/categoryRoutes");
+const productsRoutes = require("./routes/productsRoutes");
+
 
 
 
@@ -61,6 +63,7 @@ const upload = multer({
 
 usersRoutes(app, upload);
 categoriesRoutes(app);
+productsRoutes(app,upload);
 
 server.listen(3000, "" || "localhost", function () {
   console.log("Aplicacion de NodeJS " + port + " Iniciada");
