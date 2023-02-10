@@ -9,7 +9,14 @@ module.exports = (app) => {
   // POST -> ALMACENAR DATOS
   //DELETE -> BORRAR DATOS
   //PUT -> ACTUALIZAR DATOS
-
+  app.get(
+    "/api/categories/getAll",
+    passport.authenticate("jwt", { session: false }),
+    categoriesController.getAll
+  );
   app.post(
-    "/api/categories/create",passport.authenticate("jwt", { session: false }), categoriesController.createCategory);
+    "/api/categories/create",
+    passport.authenticate("jwt", { session: false }),
+    categoriesController.createCategory
+  );
 };
